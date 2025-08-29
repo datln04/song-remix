@@ -6,7 +6,7 @@ from typing import List, Dict, Optional
 from pathlib import Path
 
 from .lyrics import split_lyrics_lines, fetch_lyrics_genius
-from .search import search_youtube_covers, build_query
+from .search import search_youtube_covers, search_tiktok_covers, build_query
 from .asr_align import transcribe_audio, align_lyrics_to_words
 from .edit import cut_segments, concat_with_crossfade, build_subtitle_clip, export_video
 from moviepy import CompositeVideoClip
@@ -55,7 +55,11 @@ class RemixPipeline:
         return fetched
 
     def search_covers(self) -> List[CoverMeta]:
-        items = search_youtube_covers(build_query(self.cfg.song_name), num_covers=self.cfg.num_covers)
+        # Prefer TikTok for fewer bot prevention issues. Fall back to YouTube.
+        query = build_query(self.cfg.song_name)
+        items = search_tiktok_covers(query, num_covers=self.cfg.num_covers)
+        if not items:
+            items = search_youtube_covers(query, num_covers=self.cfg.num_covers)
         covers = [CoverMeta(
             title=it.get("title"), url=it.get("webpage_url"), duration=it.get("duration") or 0.0, view_count=it.get("view_count") or 0
         ) for it in items]
@@ -65,8 +69,9 @@ class RemixPipeline:
         out_dir.mkdir(parents=True, exist_ok=True)
         out_tmpl = str(out_dir / "%(id)s.%(ext)s")
         formats = [
-            "18/22",  # progressive mp4 360p/720p
+            # Prefer mp4 for easy processing
             "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best",
+            "18/22",  # progressive mp4 360p/720p (YouTube)
             "best",
         ]
         last_err = None

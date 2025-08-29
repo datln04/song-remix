@@ -6,6 +6,6 @@
 
 3. ✅ Integrate RemixPipeline into POST handler and save outputs
 
-4. 🔄 Run server on 0.0.0.0:12000 and verify access
+4. ✅ Run server on 0.0.0.0:12000 and verify access
 
 
