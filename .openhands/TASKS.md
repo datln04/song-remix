@@ -1,23 +1,11 @@
 # Task List
 
-1. ✅ Scaffold project structure and dependency management
+1. ✅ Add Flask web server with CORS and iframe support
 
-2. ✅ Implement lyrics fetching (optional via Genius API)
+2. ✅ Create HTML UI for song/lyrics input and local video upload
 
-3. ✅ Implement YouTube cover search sorted by popularity (yt-dlp info extraction)
+3. ✅ Integrate RemixPipeline into POST handler and save outputs
 
-4. ✅ Implement video download and audio extraction (ensure ffmpeg)
-403 in this environment; added retries and fallback. CLI supports --local_videos.
-5. ✅ Implement Whisper transcription with word timestamps (faster-whisper)
-
-6. ✅ Implement lyric alignment mapping lines to transcript windows
-
-7. ✅ Implement segment assignment strategy across covers
-
-8. ✅ Implement video remixing with crossfades and optional subtitles (moviepy/ffmpeg)
-
-9. ✅ Implement CLI entrypoint and configuration
-
-10. ⏳ Basic smoke test with a short input and document usage
+4. 🔄 Run server on 0.0.0.0:12000 and verify access
 
 
