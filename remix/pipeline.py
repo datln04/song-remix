@@ -57,7 +57,11 @@ class RemixPipeline:
     def search_covers(self) -> List[CoverMeta]:
         # Prefer TikTok for fewer bot prevention issues. Fall back to YouTube.
         query = build_query(self.cfg.song_name)
-        items = search_tiktok_covers(query, num_covers=self.cfg.num_covers)
+        # Use TikTok cookies if provided via env or default cookies.txt
+        cookies_path = os.environ.get("TIKTOK_COOKIES")
+        if not cookies_path and Path("cookies.txt").is_file():
+            cookies_path = "cookies.txt"
+        items = search_tiktok_covers(query, num_covers=self.cfg.num_covers, cookies=cookies_path)
         if not items:
             items = search_youtube_covers(query, num_covers=self.cfg.num_covers)
         covers = [CoverMeta(
