@@ -7,6 +7,8 @@ import requests
 
 YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY') or os.environ.get('GOOGLE_API_KEY')
 
+USER_AGENT = os.environ.get('YTDLP_UA') or 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+
 # We use yt-dlp for YouTube and TikTok via metadata extraction.
 
 
@@ -84,6 +86,7 @@ def search_youtube_covers(query: str, num_covers: int = 5, cookies: Optional[str
         "--skip-download",
         "--ignore-errors",
         "--no-warnings",
+        "--user-agent", USER_AGENT,
         "--default-search",
         "ytsearch",
         ytdlp_query,
