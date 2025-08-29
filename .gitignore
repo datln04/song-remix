@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Outputs and temp
+outputs/
+uploads/
+work/
+*.log
+
+# Node
+web/node_modules/
+web/dist/
+
+# OS
+.DS_Store
