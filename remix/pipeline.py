@@ -6,7 +6,7 @@ from typing import List, Dict, Optional
 from pathlib import Path
 
 from .lyrics import split_lyrics_lines, fetch_lyrics_genius
-from .search import search_youtube_covers, search_tiktok_covers, build_query
+from .search import search_youtube_covers, search_tiktok_covers, build_query, USER_AGENT
 from .asr_align import transcribe_audio, align_lyrics_to_words
 from .edit import cut_segments, concat_with_crossfade, build_subtitle_clip, export_video
 from moviepy import CompositeVideoClip
@@ -98,6 +98,7 @@ class RemixPipeline:
                 "--no-playlist",
                 "--geo-bypass",
                 "--force-ipv4",
+                "--user-agent", USER_AGENT,
                 "-N", "4",
                 "-R", "5",
                 "--fragment-retries", "5",
