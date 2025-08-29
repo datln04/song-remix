@@ -63,7 +63,9 @@ class RemixPipeline:
             cookies_path = "cookies.txt"
         items = search_tiktok_covers(query, num_covers=self.cfg.num_covers, cookies=cookies_path)
         if not items:
-            items = search_youtube_covers(query, num_covers=self.cfg.num_covers)
+            # Use YouTube cookies if provided (same env or cookies.txt)
+            ytcookies = os.environ.get("YOUTUBE_COOKIES") or cookies_path
+            items = search_youtube_covers(query, num_covers=self.cfg.num_covers, cookies=ytcookies)
         covers = [CoverMeta(
             title=it.get("title"), url=it.get("webpage_url"), duration=it.get("duration") or 0.0, view_count=it.get("view_count") or 0
         ) for it in items]
@@ -78,6 +80,15 @@ class RemixPipeline:
             "18/22",  # progressive mp4 360p/720p (YouTube)
             "best",
         ]
+        # Pass cookies for YouTube/TikTok to reduce 403s
+        ytcookies = os.environ.get("YOUTUBE_COOKIES") or ("cookies.txt" if Path("cookies.txt").is_file() else None)
+        ttcookies = os.environ.get("TIKTOK_COOKIES") or ("cookies.txt" if Path("cookies.txt").is_file() else None)
+        cookies_args = []
+        if ytcookies and ("youtube.com" in url or "youtu.be" in url):
+            cookies_args = ["--cookies", ytcookies]
+        elif ttcookies and "tiktok.com" in url:
+            cookies_args = ["--cookies", ttcookies]
+
         last_err = None
         for fmt in formats:
             cmd = [
@@ -88,9 +99,10 @@ class RemixPipeline:
                 "--geo-bypass",
                 "--force-ipv4",
                 "-N", "4",
-                "-R", "3",
-                "--fragment-retries", "3",
-            ]
+                "-R", "5",
+                "--fragment-retries", "5",
+                "--retries", "5",
+            ] + cookies_args
             try:
                 subprocess.run(cmd, check=True)
                 # pick the largest mp4

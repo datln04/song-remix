@@ -10,7 +10,7 @@ YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY') or os.environ.get('GOOGLE_AP
 # We use yt-dlp for YouTube and TikTok via metadata extraction.
 
 
-def search_youtube_covers(query: str, num_covers: int = 5) -> List[Dict]:
+def search_youtube_covers(query: str, num_covers: int = 5, cookies: Optional[str] = None) -> List[Dict]:
     """Search YouTube for cover videos.
     Prefer the official Data API if YOUTUBE_API_KEY is present; fallback to yt-dlp scraping.
 
@@ -88,6 +88,8 @@ def search_youtube_covers(query: str, num_covers: int = 5) -> List[Dict]:
         "ytsearch",
         ytdlp_query,
     ]
+    if cookies:
+        cmd += ["--cookies", cookies]
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
         for line in proc.stdout.splitlines():
