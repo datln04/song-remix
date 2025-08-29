@@ -25,15 +25,22 @@ def align_lyrics_to_words(lyrics_lines: List[str], words: List[Dict], window: in
     """Align each lyric line to a time span in the transcript by fuzzy matching.
 
     Strategy:
-    - Build a sliding window over transcript words (by count or time)
-    - For each lyric line, compute a similarity against concatenated window string
-    - Choose the best window above a threshold; return its [start,end]
+    - Build a sliding window over transcript words (by count)
+    - For each lyric line, compute similarity against concatenated window string
+    - Choose the best window; if none, fall back to fixed 3s chunks appended sequentially
     """
+    if not words:
+        # Fallback: 3s per line, sequential
+        results = []
+        t = 0.0
+        for line in lyrics_lines:
+            results.append({"line": line, "start": t, "end": t + 3.0, "score": 0})
+            t += 3.0
+        return results
+
     joined_words = [w["word"].lower() for w in words]
-    times = [w["start"] for w in words]
 
     results = []
-    i = 0
     for line in lyrics_lines:
         line_norm = " ".join(line.lower().split())
         best = (-1, None, None)

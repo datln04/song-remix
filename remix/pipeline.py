@@ -168,6 +168,14 @@ class RemixPipeline:
         if not video_clips:
             raise RuntimeError("No segments cut")
         final = concat_with_crossfade(video_clips, fade=0.15)
+        # enforce resolution if requested
+        try:
+            if isinstance(self.cfg.resolution, str) and self.cfg.resolution.endswith('p'):
+                target_h = int(self.cfg.resolution[:-1])
+                if final.h != target_h:
+                    final = final.resize(height=target_h)
+        except Exception:
+            pass
         if self.cfg.add_subtitles:
             sub = build_subtitle_clip(assigned, size=(final.w, final.h))
             if sub is not None:
